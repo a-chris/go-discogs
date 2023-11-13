@@ -6,6 +6,7 @@ import (
 )
 
 const (
+	listingURI          = "/listings/"
 	priceSuggestionsURI = "/price_suggestions/"
 	releaseStatsURI     = "/stats/"
 )
@@ -22,6 +23,8 @@ type MarketPlaceService interface {
 	// Short summary of marketplace listings
 	// Authentication is optional.
 	ReleaseStatistics(releaseID int) (*Stats, error)
+	// Listing returns the listing by listing's ID.
+	Listing(listingID int) (*Listing, error)
 }
 
 func newMarketPlaceService(url string, currency string) MarketPlaceService {
@@ -54,6 +57,27 @@ type Stats struct {
 	LowestPrice *Listing `json:"lowest_price"`
 	ForSale     int      `json:"num_for_sale"`
 	Blocked     bool     `json:"blocked_from_sale"`
+}
+
+type Listing struct {
+	Id              int    `json:"id"`
+	Title           string `json:"title"`
+	Status          string `json:"status"`
+	Price           Price  `json:"price"`
+	Condition       string `json:"condition"`
+	SleeveCondition string `json:"sleeve_condition"`
+	ShipsFrom       string `json:"ships_from"`
+	Comments        string `json:"comments"`
+	Location        string `json:"location"`
+}
+
+func (s *marketPlaceService) Listing(listingID int) (*Listing, error) {
+	params := url.Values{}
+	params.Set("curr_abbr", s.currency)
+
+	var listing *Listing
+	err := request(s.url+listingURI+strconv.Itoa(listingID), params, &listing)
+	return listing, err
 }
 
 func (s *marketPlaceService) ReleaseStatistics(releaseID int) (*Stats, error) {
