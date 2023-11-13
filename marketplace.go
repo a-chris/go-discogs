@@ -32,7 +32,7 @@ func newMarketPlaceService(url string, currency string) MarketPlaceService {
 }
 
 // Listing is a marketplace listing with the user's currency and a price value
-type Listing struct {
+type Price struct {
 	Currency string  `json:"currency"`
 	Value    float64 `json:"value"`
 }
